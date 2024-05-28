@@ -1,0 +1,884 @@
+id: 793ded70-07c6-4d54-8ee9-79c6d88516eb
+version: 10
+vcShouldKeepItemLegacyProdMachine: false
+name: PoC - Process NGFW Threat Alert
+description: |-
+  Close the alert when meeting all of the following conditions.
+   - The alert is a single alert incident (No other alerts are associated with the incident)
+   - The endpoint identified by the source IP is protected by Cortex Agent and online.
+    AND
+    (
+      - a notification which was blocked by NGFW
+       OR
+      - matched with any of these rules
+        * PoC - Process NGFW Threat Whitelisting
+    )
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a7fe0967-f688-475c-88d1-d1e111a3a2f8
+    type: start
+    task:
+      id: a7fe0967-f688-475c-88d1-d1e111a3a2f8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 35c972b8-b41d-49fd-8f76-830c922cdcac
+    type: title
+    task:
+      id: 35c972b8-b41d-49fd-8f76-830c922cdcac
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3425
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 0defcae0-7197-4a87-8b6e-d1f3370caa20
+    type: title
+    task:
+      id: 0defcae0-7197-4a87-8b6e-d1f3370caa20
+      version: -1
+      name: Wait 5 mins for other alerts to be grouped into the incident
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: b8e849b8-e9ea-4a14-8bbb-2d7e864040ed
+    type: regular
+    task:
+      id: b8e849b8-e9ea-4a14-8bbb-2d7e864040ed
+      version: -1
+      name: Wait 5 mins
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      seconds:
+        simple: "300"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 56fe44a3-59ac-4d6b-8e86-6c623bbb446e
+    type: title
+    task:
+      id: 56fe44a3-59ac-4d6b-8e86-6c623bbb446e
+      version: -1
+      name: Check if this is a single alert incident
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 23d3070f-baa5-41e4-8332-5492d2a0b90c
+    type: regular
+    task:
+      id: 23d3070f-baa5-41e4-8332-5492d2a0b90c
+      version: -1
+      name: Search alerts associated with the incident
+      description: |-
+        Searches Demisto alerts. A summarized version of this scrips is avilable with the summarizedversion argument.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      query:
+        simple: parentXDRIncident:INCIDENT-${parentIncidentFields.incident_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: ac09bb90-83cb-4564-8730-37a4eeaa107f
+    type: condition
+    task:
+      id: ac09bb90-83cb-4564-8730-37a4eeaa107f
+      version: -1
+      name: Single alert incident?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: foundIncidents
+                accessor: id
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 9de68e63-fc50-471d-84b8-6b008bdceb73
+    type: title
+    task:
+      id: 9de68e63-fc50-471d-84b8-6b008bdceb73
+      version: -1
+      name: Close if FW dropped the session
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: d2f66e30-aa2e-425b-8706-d661170b6e62
+    type: regular
+    task:
+      id: d2f66e30-aa2e-425b-8706-d661170b6e62
+      version: -1
+      name: Close Alert
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      closeReason:
+        simple: FW dropped the session, and there were no associated alerts
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 2900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: dce51c2c-2b16-4b54-8f54-8ef79af2ff51
+    type: title
+    task:
+      id: dce51c2c-2b16-4b54-8f54-8ef79af2ff51
+      version: -1
+      name: Close if whitelisting rules match
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: c41d7396-2465-41c9-8d1a-a375ebdf237b
+    type: condition
+    task:
+      id: c41d7396-2465-41c9-8d1a-a375ebdf237b
+      version: -1
+      name: Was the session blocked by FW?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "35"
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: alert.sourceBrand
+            iscontext: true
+          right:
+            value:
+              simple: FW
+        - operator: isEqualString
+          left:
+            value:
+              simple: alert.sourceBrand
+            iscontext: true
+          right:
+            value:
+              simple: PANW - NGFW
+      - - operator: startWith
+          left:
+            value:
+              simple: alert.action
+            iscontext: true
+          right:
+            value:
+              simple: BLOCKED
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: ce59b264-7eba-4b37-8c83-4fb7c84a888c
+    type: title
+    task:
+      id: ce59b264-7eba-4b37-8c83-4fb7c84a888c
+      version: -1
+      name: Enrichment & Increase Severity
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 9aba8ecb-a0bc-4ae8-8e14-01d89179128f
+    type: playbook
+    task:
+      id: 9aba8ecb-a0bc-4ae8-8e14-01d89179128f
+      version: -1
+      name: Register Remote IP with Updated Verdict
+      description: This playbook add indicators to the Threat Intel if they are not
+        there, and update enrich reputations.
+      playbookName: MM - Register Indicators with Updated Verdict
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      ExtractDomainFromURL:
+        simple: "true"
+      IP:
+        complex:
+          root: alert
+          accessor: remoteip
+          transformers:
+          - operator: uniq
+      OutputIndicatorDBotScore:
+        simple: "true"
+      UseGetIndicatorDBotScoreFromContext:
+        simple: "false"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 6cbe16b1-81f3-4fcb-822e-b935abd13f2b
+    type: regular
+    task:
+      id: 6cbe16b1-81f3-4fcb-822e-b935abd13f2b
+      version: -1
+      name: Increase Severity
+      description: Optionally increases the alert severity to the new value if it
+        is greater than the existing severity.
+      scriptName: IncreaseAlertSeverity
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      severity:
+        complex:
+          root: IndicatorDBotScore
+          accessor: Score
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: "0"
+              raw: {}
+          - operator: MaxList
+          - operator: round
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: da7cd1f5-0ce7-41e4-8f02-cc9c81c107c0
+    type: regular
+    task:
+      id: da7cd1f5-0ce7-41e4-8f02-cc9c81c107c0
+      version: -1
+      name: Evaluate Whitelist Rules
+      description: Check if the exclusion rules match the alert.
+      scriptName: EvaluateRules
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      rules:
+        simple: ${lists.PoC - Process NGFW Threat Whitelisting}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: c292b036-dde8-484e-8caa-f0be221be453
+    type: condition
+    task:
+      id: c292b036-dde8-484e-8caa-f0be221be453
+      version: -1
+      name: Did any rules match?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: EvaluateRules.match
+                filters:
+                - - operator: isTrue
+                    left:
+                      value:
+                        simple: EvaluateRules.match
+                      iscontext: true
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 38355d6a-2f5f-4015-81bf-929154026f8d
+    type: regular
+    task:
+      id: 38355d6a-2f5f-4015-81bf-929154026f8d
+      version: -1
+      name: Identify Client IP
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      key:
+        simple: ClientIP
+      value:
+        complex:
+          root: alert
+          accessor: localip
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: alert.hostip
+                iscontext: true
+              raw: {}
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 9a76d014-b0b6-4b5e-8451-b9271cd0b739
+    type: condition
+    task:
+      id: 9a76d014-b0b6-4b5e-8451-b9271cd0b739
+      version: -1
+      name: Did we identify a client IP?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "35"
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ClientIP
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: eecd6abc-bf94-4fa2-884f-b6050c94a397
+    type: regular
+    task:
+      id: eecd6abc-bf94-4fa2-884f-b6050c94a397
+      version: -1
+      name: Find a Cortex Agent by Client IP
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set (start by counting from 0).
+      script: '|||core-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      ip_list:
+        simple: ${ClientIP}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 1825
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: e3b2926a-84a0-488d-87d0-9f167a409cf4
+    type: condition
+    task:
+      id: e3b2926a-84a0-488d-87d0-9f167a409cf4
+      version: -1
+      name: Is the Cortex Agent on line?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "35"
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.Endpoint.endpoint_status
+            iscontext: true
+          right:
+            value:
+              simple: CONNECTED
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: af6654b2-0acb-4e61-8b31-ed1cabe0b5ed
+    type: title
+    task:
+      id: af6654b2-0acb-4e61-8b31-ed1cabe0b5ed
+      version: -1
+      name: Close if Cortex Agent initiated
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 21ba3670-9101-4b40-8301-3347985e776a
+    type: condition
+    task:
+      id: 21ba3670-9101-4b40-8301-3347985e776a
+      version: -1
+      name: Are whitelisting rules defined?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: lists.PoC - Process NGFW Threat Whitelisting
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3440,
+        "width": 932.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: 04542f19-3062-4411-85fe-017de599c6e9
